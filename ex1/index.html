@@ -101,7 +101,7 @@
             <div id='ex2'>
 
                 <!-- ปุ่ม Add Student------------------- -->
-                <a class="button is-primary">Add Student</a>
+                <a class="button is-primary" @click="addStudent()">Add Student</a>
 
                 <div>
                     <table class="table">
@@ -114,12 +114,13 @@
                         </thead>
                         <tbody>
                             <!-- ตัวอย่างข้อมูล------------ -->
-                            <tr>
-                                <td>นายxxxxx yyyyy</td>
-                                <td>99</td>
+                            
+                            <tr v-for="(item, index) in students">
+                                <td>{{item.fullname}}</td>
+                                <td>{{item.score}}</td>
                                 <td>
                                     <!-- ปุ่ม Delete------------------- -->
-                                    <a class="button is-danger">Delete</a>
+                                    <a class="button is-danger" @click="removeStudent(index)">Delete</a>
                                 </td>
                             </tr>
 
@@ -168,14 +169,14 @@
                             <th class="is-warning">sum</th>
                             <td>
                                 <!-- แสดงผลรวมคะแนนที่นี้ -->
-                                120
+                                {{sum}}
                             </td>
                         </tr>
                         <tr>
                             <th class="is-primary">avarage</th>
                             <td>
                                 <!-- แสดงค่าเฉลี่ยที่นี่ -->
-                                12.3
+                                {{avg}}
                             </td>
                         </tr>
                     </tbody>
@@ -223,6 +224,11 @@
                             <td>55</td>
                             <td style="color : green">+ 6.5</td>
                         </tr>
+                        <tr v-for="log in logs">
+                            <td>{{log.NewAvg}}</td>
+                            <td>{{log.OldAvg}}</td>
+                            <td v-bind:style="[(log.diff > 0) ? {'color':'green'} : {'color':'red'}]">{{log.diff}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -239,7 +245,7 @@
                     <div class="columns">
                     <div class="column">
                     <p class="control has-icons-left">
-                            <input class="input" type="text" placeholder="Name Search by Watchers">
+                            <input class="input" type="text" placeholder="Name Search by Watchers" v-model="find_txt">
                       <span class="icon is-small is-left">
                         <i class="fa fa-search"></i>
                       </span>
@@ -277,7 +283,7 @@
                 <div style="display: flex; justify-content: flex-end;" class="my-2">
                     <div class="control has-icons-left">
                         <div class="select">
-                          <select>
+                          <select v-model="gender">
                             <option></option>
                             <option>Male</option>
                             <option>Female</option>
@@ -327,7 +333,81 @@
                 students: [],
                 logs: [],
                 dummyData: dummyData,
+                prename: "",
+                fname: "",
+                lname: "",
+                score: 0,
+                sum:0,
+                avg:0,
+                find_txt:"",
+                gender:""
             },
+            methods: {
+                addStudent(){
+                    if(this.fname == "" || this.lname == "" || this.score == "" || this.prename == ""){
+                        alert("Please enter all input")
+                        
+                    }
+                    else if(this.score > 100 || this.score < 0){
+                        alert("Score is incorrect")
+                    }
+                    else{
+                        //กรอกในarray students
+                        const stud_obj = {fullname: this.prename + this.fname + " " + this.lname,
+                        score: parseInt(this.score)}
+                        this.students.push(stud_obj)
+                    }
+                },
+                removeStudent(index){
+                    // console.log(index)
+                    this.students.splice(index,1)
+                    // console.log("removed")
+                },
+            },
+            computed:{
+                sum_score(){
+                    let sum_score = 0
+                    this.students.forEach(element => {
+                        sum_score += element.score
+                        
+                        
+                    });
+                    return this.sum = sum_score
+                },
+                avg_score(){
+                    if(this.students.length == 0){
+                        return this.avg
+                    }
+                    else{
+                        return this.avg = this.sum / this.students.length 
+                    }
+                    
+                },
+                search_gender(){
+                    
+                    console.log(this.gender)
+                    return this.gender = gender
+                }
+                
+            },
+            watch: {
+                avg: function(newAvg, oldAvg){
+                    console.log("see some change")
+                    console.log(newAvg)
+                    console.log(oldAvg)
+                    const lol = {
+                        NewAvg: newAvg, OldAvg: oldAvg, diff: newAvg-oldAvg
+                    }
+                    this.logs.push(lol)
+                    console.log("pushed")
+                },
+                find_txt: function(txt){
+                    console.log(txt)
+                    console.log(this.dummyData.includes())
+                }
+                
+            
+            }
         })
     </script>
 
